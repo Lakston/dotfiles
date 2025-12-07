@@ -1,6 +1,6 @@
 # Reload config with cmd + shft + , 
 
-theme = catppuccin-mocha.conf
+theme = "Tokyonight Storm"
 background-opacity = 0.7
 background-blur-radius = 20
 
@@ -8,9 +8,8 @@ macos-titlebar-style = hidden
 macos-option-as-alt = true
 mouse-hide-while-typing = true
 
-cursor-style = block
+cursor-style = underline
 cursor-style-blink = false
-cursor-invert-fg-bg = false
 shell-integration-features = no-cursor
 
 font-size = 21
