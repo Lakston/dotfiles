@@ -1,51 +1,88 @@
-# Get editor completions based on the config schema
-"$schema" = 'https://starship.rs/config-schema.json'
+format = """
+[╭](fg:current_line)\
+$directory\
+$git_branch\
+$git_state\
+$git_commit\
+$fill\
+$nodejs\
+$python\
+$java\
+$c\
+$cmd_duration\
+$line_break\
+$character\
+"""
 
+palette = 'tokyo_night'
 add_newline = true
-# A minimal left prompt
-format = """$directory$character"""
-palette = "catppuccin_mocha"
-# move the rest of the prompt to the right
-# Excluding cloud module - list modules explicitly
-right_format = """$git_branch$git_status$nodejs$python$rust$golang$package$time"""
-command_timeout = 1000
 
-[character]
-success_symbol = '[➜](bold green)'
+[palettes.tokyo_night]
+foreground = '#c0caf5'
+background = '#1a1b26'
+current_line = '#c0caf5'
+primary = '#1a1b26'
+box = '#2f3549'
+blue = '#7aa2f7'
+cyan = '#0db9d7'
+green = '#9ece6a'
+orange = '#ff9e64'
+pink = '#bb9af7'
+purple = '#9d7cd8'
+red = '#f7768e'
+yellow = '#e0af68'
 
-[directory.substitutions]
-'~/tests/starship-custom' = 'work-project'
+[fill]
+symbol = ' '
+
+[directory]
+format = '[ ](fg:current_line)[](fg:pink)[󰷏](fg:primary bg:pink)[](fg:pink bg:box)[ $read_only$truncation_symbol$path](fg:foreground bg:box)[](fg:box)'
+home_symbol = " ~/"
+truncation_symbol = '../'
+truncation_length = 1
+read_only = '󱧵 '
+read_only_style = ''
 
 [git_branch]
-format =  '[$symbol$branch(:$remote_branch)]($style)'
+format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $branch](fg:foreground bg:box)[](fg:box)'
+symbol = ''
 
-[golang]
-format = '[ ](bold cyan)'
+[git_state]
+format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $all_status$ahead_behind](fg:foreground bg:box)[](fg:box)'
+cherry_pick = '🍒'
+rebase = '🔄'
+merge = '🔀'
 
-[palettes.catppuccin_mocha]
-rosewater = "#f5e0dc"
-flamingo = "#f2cdcd"
-pink = "#f5c2e7"
-mauve = "#cba6f7"
-red = "#f38ba8"
-maroon = "#eba0ac"
-peach = "#fab387"
-yellow = "#f9e2af"
-green = "#a6e3a1"
-teal = "#94e2d5"
-sky = "#89dceb"
-sapphire = "#74c7ec"
-blue = "#89b4fa"
-lavender = "#b4befe"
-text = "#cdd6f4"
-subtext1 = "#bac2de"
-subtext0 = "#a6adc8"
-overlay2 = "#9399b2"
-overlay1 = "#7f849c"
-overlay0 = "#6c7086"
-surface2 = "#585b70"
-surface1 = "#45475a"
-surface0 = "#313244"
-base = "#1e1e2e"
-mantle = "#181825"
-crust = "#11111b"
+[git_commit]
+commit_hash_length = 4
+tag_symbol = '🔖 '
+
+[nodejs]
+format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+symbol = '󰎙'
+
+[bun]
+format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+symbol = '🍔'
+
+[python]
+format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+symbol = ''
+
+[java]
+format = '[ ](fg:current_line)[](fg:red)[$symbol](fg:primary bg:red)[](fg:red bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+symbol = ''
+
+[c]
+format = '[ ](fg:current_line)[](fg:blue)[$symbol](fg:primary bg:blue)[](fg:blue bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+symbol = ''
+
+[cmd_duration]
+min_time = 500
+format = '[ ](fg:current_line)[](fg:orange)[](fg:primary bg:orange)[](fg:orange bg:box)[ $duration ](fg:foreground bg:box)[](fg:box)'
+
+[character]
+format = """
+[╰─$symbol](fg:current_line) """
+success_symbol = '[❯❯](fg:bold white)'
+error_symbol = '[×](fg:bold red)'
