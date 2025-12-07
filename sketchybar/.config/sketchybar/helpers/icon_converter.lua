@@ -13,7 +13,7 @@ local icon_map = {
 	[":goland:"] = "󰨞", -- GoLand
 	[":datagrip:"] = "󰨞", -- DataGrip
   [":reactotron:"] = "", -- Reactotron
-  ["xcode:"] = "", -- Xcode
+  [":xcode:"] = "", -- Xcode
 
 	-- Terminals
 	[":ghostty:"] = "", -- Ghostty terminal
@@ -39,7 +39,7 @@ local icon_map = {
 	[":safari:"] = "󰀺", -- Safari
 	[":firefox:"] = "󰈹", -- Firefox
 	[":google_chrome:"] = "󰊯", -- Chrome
-  ["zen_browser:"] = "󰈹", -- Zen Browser
+  [":zen_browser:"] = "󰈹", -- Zen Browser
 	
 	-- System & Utilities
 	[":finder:"] = "󰀶", -- Finder
