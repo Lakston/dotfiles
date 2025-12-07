@@ -7,6 +7,7 @@
 local colors = require("colors")
 local settings = require("settings")
 local app_icons = require("helpers.app_icons")
+local icon_converter = require("helpers.icon_converter")
 
 -- Register the custom event that AeroSpace will emit
 sbar.add("event", "aerospace_workspace_change")
@@ -16,12 +17,11 @@ sbar.add("event", "aerospace_workspace_change")
 -- ============================================================================
 
 -- Workspace layout configuration
--- Display mapping: 3 = left monitor, 1 = middle monitor, 2 = right monitor
+-- Display mapping: 1 = main monitor, 2 = second monitor
 -- Each workspace will only appear on its designated monitor's bar
 local WORKSPACE_LAYOUT = {
-	{ display = 3, workspaces = { "1", "2", "3", "4", "5", "6", "7", "8", "9" } }, -- left monitor
-	{ display = 1, workspaces = { "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P" } }, -- middle monitor
-	{ display = 2, workspaces = { "A", "S", "D", "F", "G", "Z", "X", "C", "V", "B" } }, -- right monitor
+	{ display = 1, workspaces = { "1", "2", "3" } }, -- main monitor
+	{ display = 2, workspaces = { "4", "5" } }, -- second monitor
 }
 
 -- Visual styling constants
@@ -68,17 +68,21 @@ local function create_workspace_item(ws)
 		icon = {
 			font = { family = settings.font.numbers },
 			string = ws, -- Display the workspace name/letter
-			padding_left = 15,
-			padding_right = 8,
+			padding_left = 10,
+			padding_right = 6,
 			color = STYLE.inactive_icon_color,
 			highlight_color = STYLE.active_icon_highlight,
 		},
 		label = {
-			padding_right = 20,
+			padding_right = 10,
 			color = STYLE.inactive_label_color,
 			highlight_color = STYLE.active_label_highlight,
-			font = "sketchybar-app-font:Regular:16.0", -- Use app font for icons
-			y_offset = -1,
+			font = {
+				family = "Hack Nerd Font",
+				style = "Regular",
+				size = 16.0
+			}, -- Use NerdFont for app icons
+			y_offset = 0,
 		},
 		padding_right = 1,
 		padding_left = 1,
@@ -172,6 +176,7 @@ local function set_workspace_visibility(ws, visible)
 	sbar.set(padding_items[ws], { drawing = drawing_state })
 end
 
+
 -- Updates the visual appearance of a workspace based on its state and contents
 local function update_workspace_appearance(ws, focused_workspace)
 	local workspace = workspace_items[ws]
@@ -184,19 +189,24 @@ local function update_workspace_appearance(ws, focused_workspace)
 	-- Get list of applications running in this workspace
 	sbar.exec(string.format('aerospace list-windows --workspace %s --format "%%{app-name}"', ws), function(output)
 		local seen_apps = {}
-		local app_icons_string = ""
+		local icon_parts = {}
 
-		-- Parse application names and build icon string
+		-- Parse application names and build icon array
 		for app_name in string.gmatch(output or "", "[^\r\n]+") do
 			app_name = app_name:gsub("^%s+", ""):gsub("%s+$", "") -- Trim whitespace
 
 			-- Only add unique apps to avoid duplicate icons
 			if app_name ~= "" and not seen_apps[app_name] then
 				seen_apps[app_name] = true
-				local icon = app_icons[app_name] or app_icons["Default"] or "·"
-				app_icons_string = app_icons_string .. icon
+				local placeholder = app_icons[app_name] or app_icons["Default"] or ":default:"
+				local icon = icon_converter.convert(placeholder)
+				table.insert(icon_parts, icon)
 			end
 		end
+
+		-- Build icon string with consistent spacing
+		-- Using a single space between icons for cleaner look
+		local app_icons_string = table.concat(icon_parts, "  ")
 
 		-- Show placeholder when workspace is empty
 		if app_icons_string == "" then
@@ -206,7 +216,11 @@ local function update_workspace_appearance(ws, focused_workspace)
 		-- Update workspace visual state with proper highlighting
 		workspace.item:set({
 			icon = { highlight = is_focused },
-			label = { string = app_icons_string, highlight = is_focused },
+			label = { 
+				string = app_icons_string, 
+				highlight = is_focused,
+				drawing = "on"
+			},
 			background = {
 				border_color = is_focused and STYLE.chip_border or STYLE.bracket_border,
 			},

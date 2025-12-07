@@ -2,6 +2,7 @@ require("items.widgets.battery")
 require("items.widgets.volume")
 require("items.widgets.wifi")
 require("items.widgets.cpu")
+require("items.widgets.ram")
 -- require("items.widgets.git_toolkit") -- Disabled: too slow
 -- require("items.widgets.music")
 require("items.widgets.weather")

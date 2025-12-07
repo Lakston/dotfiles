@@ -23,7 +23,8 @@ local volume_icon = sbar.add("item", "widgets.volume2", {
     align = "left",
     color = colors.grey,
     font = {
-      style = settings.font.style_map["Regular"],
+      family = "Hack Nerd Font",
+      style = "Regular",
       size = 14.0,
     },
   },
@@ -86,7 +87,16 @@ volume_percent:subscribe("volume_change", function(env)
     lead = "0"
   end
 
-  volume_icon:set({ label = icon })
+  volume_icon:set({
+    icon = {
+      string = icon,
+      font = {
+        family = "Hack Nerd Font",
+        style = "Regular",
+        size = 14.0,
+      }
+    }
+  })
   volume_percent:set({ label = lead .. volume .. "%" })
   volume_slider:set({ slider = { percentage = volume } })
 end)
