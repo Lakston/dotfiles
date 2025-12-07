@@ -1,5 +1,4 @@
 format = """
-[╭](fg:current_line)\
 $directory\
 $git_branch\
 $git_state\
@@ -36,12 +35,9 @@ yellow = '#e0af68'
 symbol = ' '
 
 [directory]
-format = '[ ](fg:current_line)[](fg:pink)[󰷏](fg:primary bg:pink)[](fg:pink bg:box)[ $read_only$truncation_symbol$path](fg:foreground bg:box)[](fg:box)'
-home_symbol = " ~/"
+format = '(fg:current_line)[](fg:pink)[](fg:primary bg:pink)[](fg:pink bg:box)[ $read_only$truncation_symbol$path](fg:foreground bg:box)[](fg:box)'
 truncation_symbol = '../'
-truncation_length = 1
-read_only = '󱧵 '
-read_only_style = ''
+truncation_length = 2
 
 [git_branch]
 format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $branch](fg:foreground bg:box)[](fg:box)'
@@ -58,19 +54,19 @@ commit_hash_length = 4
 tag_symbol = '🔖 '
 
 [nodejs]
-format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+format = '(fg:current_line)[](fg:blue)[$symbol](fg:primary bg:blue)[](fg:blue bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
 symbol = '󰎙'
 
 [bun]
-format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+format = '[ ](fg:current_line)[](fg:blue)[$symbol](fg:primary bg:blue)[](fg:blue bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
 symbol = '🍔'
 
 [python]
-format = '[ ](fg:current_line)[](fg:green)[$symbol](fg:primary bg:green)[](fg:green bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+format = '[ ](fg:current_line)[](fg:blue)[$symbol](fg:primary bg:blue)[](fg:blue bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
 symbol = ''
 
 [java]
-format = '[ ](fg:current_line)[](fg:red)[$symbol](fg:primary bg:red)[](fg:red bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
+format = '[ ](fg:current_line)[](fg:blue)[$symbol](fg:primary bg:blue)[](fg:blue bg:box)[ $version](fg:foreground bg:box)[](fg:box)'
 symbol = ''
 
 [c]
@@ -82,7 +78,5 @@ min_time = 500
 format = '[ ](fg:current_line)[](fg:orange)[](fg:primary bg:orange)[](fg:orange bg:box)[ $duration ](fg:foreground bg:box)[](fg:box)'
 
 [character]
-format = """
-[╰─$symbol](fg:current_line) """
-success_symbol = '[❯❯](fg:bold white)'
+success_symbol = '[❯](fg:bold green)'
 error_symbol = '[×](fg:bold red)'
