@@ -58,14 +58,14 @@ brew install bash
 brew install zsh
 brew install git
 brew install wget
-brew install jq
+brew install jq # json processor
 brew install tmux
-brew install ripgrep
+brew install ripgrep # grep replacement
 brew install fzf
-brew install bat
+brew install bat # cat replacement
 brew install node
-brew install n
-brew install lua
+brew install n # node version manager
+brew install lua # required for sketchybar
 brew install stow # dotfiles symlink manager
 brew install taproom # brew packages manager
 
@@ -75,12 +75,12 @@ brew install taproom # brew packages manager
 echo "🐚 Installing Zsh plugins & tools..."
 brew install zsh-autosuggestions
 brew install zsh-syntax-highlighting 
-brew install starship # prompt
+brew install starship # customizable shell prompt
 brew install superfile # file manager
-brew install zoxide # cd
+brew install zoxide # smart directory navigation
 brew install atuin # shell history
-brew install tealdeer # tldr
-brew install eza # ls
+brew install tealdeer # fast `tldr` client
+brew install eza # modern `ls` replacement
 
 ### Run fzf install script for shell integration
 echo "⚡ Setting up fzf shell integration..."
