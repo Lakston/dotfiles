@@ -67,6 +67,7 @@ brew install node
 brew install n
 brew install lua
 brew install stow # dotfiles symlink manager
+brew install taproom # brew packages manager
 
 ### --------------------------------------------------
 ### Install Zsh ecosystem
