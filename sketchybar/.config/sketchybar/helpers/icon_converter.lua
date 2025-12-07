@@ -6,16 +6,15 @@ local icon_map = {
 	-- Code editors & IDEs
 	[":cursor:"] = "󰨞", -- Cursor editor
 	[":code:"] = "󰨞", -- VS Code / Code editor
-	[":neovim:"] = "󰨞", -- Neovim
-	[":vim:"] = "󰨞", -- Vim
-	[":idea:"] = "󰨞", -- IntelliJ IDEA
-	[":pycharm:"] = "󰨞", -- PyCharm
+	[":neovim:"] = "", -- Neovim
+	[":vim:"] = "", -- Vim
+	[":pycharm:"] = "", -- PyCharm
 	[":web_storm:"] = "󰨞", -- WebStorm
-	[":php_storm:"] = "󰨞", -- PhpStorm
 	[":goland:"] = "󰨞", -- GoLand
-	[":rider:"] = "󰨞", -- Rider
 	[":datagrip:"] = "󰨞", -- DataGrip
-	
+  [":reactotron:"] = "", -- Reactotron
+  ["xcode:"] = "", -- Xcode
+
 	-- Terminals
 	[":ghostty:"] = "", -- Ghostty terminal
 	[":terminal:"] = "󰆍", -- Terminal
@@ -33,7 +32,7 @@ local icon_map = {
 	[":whats_app:"] = "󰖣", -- WhatsApp
 	[":signal:"] = "󰨙", -- Signal
 	[":messages:"] = "󰍦", -- Messages
-	[":mail:"] = "󰊶", -- Mail
+	[":mail:"] = "", -- Mail
 	[":zoom:"] = "󰕧", -- Zoom
 	
 	-- Browsers
@@ -51,7 +50,7 @@ local icon_map = {
 	[":photos:"] = "󰉏", -- Photos
 	[":music:"] = "󰝚", -- Music
 	[":weather:"] = "󰖐", -- Weather
-	[":preview:"] = "󰈔", -- Preview
+	[":preview:"] = "", -- Preview
 	[":activity_monitor:"] = "󰍛", -- Activity Monitor
 	
 	-- Media
@@ -65,7 +64,7 @@ local icon_map = {
 	[":figma:"] = "󰈖", -- Figma
 	
 	-- Productivity
-	[":notion:"] = "󰈙", -- Notion
+	[":notion:"] = "", -- Notion
 	[":obsidian:"] = "󰈙", -- Obsidian
 	[":todoist:"] = "󰄱", -- Todoist
 	[":things:"] = "󰄱", -- Things

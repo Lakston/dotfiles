@@ -20,20 +20,17 @@ sbar.add("event", "aerospace_workspace_change")
 -- Display mapping: 1 = main monitor, 2 = second monitor
 -- Each workspace will only appear on its designated monitor's bar
 local WORKSPACE_LAYOUT = {
-	{ display = 1, workspaces = { "1", "2", "3" } }, -- main monitor
-	{ display = 2, workspaces = { "4", "5" } }, -- second monitor
+	{ display = 1, workspaces = { "1", "2", "3", "4", "5" } }, -- main monitor
 }
 
 -- Visual styling constants
 local STYLE = {
 	chip_bg = colors.bg1, -- Background color for workspace chips
-	chip_border = colors.black, -- Border color for workspace chips
 	chip_height = 26, -- Height of workspace chips
-	bracket_border = colors.bg2, -- Border color for workspace brackets
-	active_icon_highlight = colors.red, -- Highlight color for active workspace icon
-	active_label_highlight = colors.white, -- Highlight color for active workspace label
-	inactive_icon_color = colors.white, -- Color for inactive workspace icons
-	inactive_label_color = colors.grey, -- Color for inactive workspace labels
+	active_workspace_number_color = colors.white, -- Highlight color for active workspace number
+	active_app_icons_color = colors.white, -- Highlight color for active app icons
+	inactive_workspace_number_color = colors.grey, -- Color for inactive workspace number
+	inactive_app_icons_color = colors.grey, -- Color for inactive app icons
 }
 
 -- ============================================================================
@@ -41,7 +38,7 @@ local STYLE = {
 -- ============================================================================
 
 -- Storage for workspace items and their associated elements
-local workspace_items = {} -- workspace -> { item, bracket, display }
+local workspace_items = {} -- workspace -> { item, display }
 local padding_items = {} -- workspace -> padding item name
 local separator_items = {} -- display -> separator item name
 
@@ -66,17 +63,21 @@ local function create_workspace_item(ws)
 		position = "left",
 		display = display, -- Pin this chip to its designated monitor
 		icon = {
-			font = { family = settings.font.numbers },
+			font = { 
+				family = settings.font.numbers,
+				style = settings.font.style_map["Bold"],
+			},
 			string = ws, -- Display the workspace name/letter
-			padding_left = 10,
-			padding_right = 6,
-			color = STYLE.inactive_icon_color,
-			highlight_color = STYLE.active_icon_highlight,
+			padding_left = 8,
+			padding_right = 3,
+			color = STYLE.inactive_workspace_number_color,
+			highlight_color = STYLE.active_workspace_number_color,
 		},
 		label = {
-			padding_right = 10,
-			color = STYLE.inactive_label_color,
-			highlight_color = STYLE.active_label_highlight,
+			padding_right = 8,
+			padding_left = 4,  -- Space between workspace number and icons
+			color = STYLE.inactive_app_icons_color,
+			highlight_color = STYLE.active_app_icons_color,
 			font = {
 				family = "Hack Nerd Font",
 				style = "Regular",
@@ -84,27 +85,14 @@ local function create_workspace_item(ws)
 			}, -- Use NerdFont for app icons
 			y_offset = 0,
 		},
-		padding_right = 1,
-		padding_left = 1,
+		padding_right = 0,
+		padding_left = 0,
 		background = {
 			color = STYLE.chip_bg,
-			border_width = 1,
 			height = STYLE.chip_height,
-			border_color = STYLE.chip_border,
+			drawing = true,
 		},
 		click_script = "aerospace workspace " .. ws, -- Left click switches to workspace
-		drawing = "off", -- Initially hidden
-	})
-
-	-- Create a bracket around the workspace item for visual grouping
-	local bracket = sbar.add("bracket", { item.name }, {
-		display = display, -- Bracket appears on same monitor as the item
-		background = {
-			color = colors.transparent,
-			border_color = STYLE.bracket_border,
-			height = STYLE.chip_height + 2,
-			border_width = 2,
-		},
 		drawing = "off", -- Initially hidden
 	})
 
@@ -115,7 +103,7 @@ local function create_workspace_item(ws)
 		end
 	end)
 
-	return item, bracket
+	return item
 end
 
 -- Creates a padding item for spacing between workspace groups
@@ -135,11 +123,11 @@ local function ensure_workspace_exists(ws)
 	end
 
 	local display = workspace_to_display[ws] or "active"
-	local item, bracket = create_workspace_item(ws)
+	local item = create_workspace_item(ws)
 	local pad = create_padding_item(ws, display)
 
 	-- Store references to all created items
-	workspace_items[ws] = { item = item, bracket = bracket, display = display }
+	workspace_items[ws] = { item = item, display = display }
 	padding_items[ws] = pad.name
 
 	return workspace_items[ws]
@@ -165,14 +153,14 @@ end
 -- VISIBILITY AND STYLING FUNCTIONS
 -- ============================================================================
 
+
 -- Shows or hides a workspace and its associated elements
 local function set_workspace_visibility(ws, visible)
 	local workspace = ensure_workspace_exists(ws)
 	local drawing_state = visible and "on" or "off"
 
-	-- Show/hide the main workspace item, bracket, and padding
+	-- Show/hide the main workspace item and padding
 	workspace.item:set({ drawing = drawing_state })
-	workspace.bracket:set({ drawing = drawing_state })
 	sbar.set(padding_items[ws], { drawing = drawing_state })
 end
 
@@ -185,13 +173,14 @@ local function update_workspace_appearance(ws, focused_workspace)
 	end
 
 	local is_focused = (ws == focused_workspace)
+	local display = workspace.display
 
 	-- Get list of applications running in this workspace
 	sbar.exec(string.format('aerospace list-windows --workspace %s --format "%%{app-name}"', ws), function(output)
 		local seen_apps = {}
 		local icon_parts = {}
 
-		-- Parse application names and build icon array
+		-- Parse application names and build icon string
 		for app_name in string.gmatch(output or "", "[^\r\n]+") do
 			app_name = app_name:gsub("^%s+", ""):gsub("%s+$", "") -- Trim whitespace
 
@@ -204,32 +193,20 @@ local function update_workspace_appearance(ws, focused_workspace)
 			end
 		end
 
-		-- Build icon string with consistent spacing
-		-- Using a single space between icons for cleaner look
-		local app_icons_string = table.concat(icon_parts, "  ")
-
-		-- Show placeholder when workspace is empty
+		-- Build icon string with spacing between icons
+		-- Using a single space for spacing (can be adjusted)
+		local app_icons_string = table.concat(icon_parts, " ")
 		if app_icons_string == "" then
 			app_icons_string = " —"
 		end
 
-		-- Update workspace visual state with proper highlighting
+		-- Update workspace visual state
 		workspace.item:set({
 			icon = { highlight = is_focused },
-			label = { 
-				string = app_icons_string, 
+			label = {
+				string = app_icons_string,
 				highlight = is_focused,
-				drawing = "on"
-			},
-			background = {
-				border_color = is_focused and STYLE.chip_border or STYLE.bracket_border,
-			},
-		})
-
-		-- Update bracket styling with focus indication
-		workspace.bracket:set({
-			background = {
-				border_color = is_focused and colors.grey or STYLE.bracket_border,
+				drawing = "on",
 			},
 		})
 	end)
@@ -367,3 +344,4 @@ end
 -- Perform initial update and start periodic refresh
 update_all_workspaces()
 periodic_refresh()
+
