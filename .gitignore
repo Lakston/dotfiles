@@ -1,0 +1,7 @@
+# Log files
+*.log
+**/*.log
+
+# Sketchybar debug log (specific)
+sketchybar/.config/sketchybar/git_debug.log
+
