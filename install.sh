@@ -67,7 +67,7 @@ brew install node
 brew install n # node version manager
 brew install lua # required for sketchybar
 brew install stow # dotfiles symlink manager
-brew install taproom # brew packages manager
+brew install gromgit/brewtils/taproom # brew packages manager
 
 ### --------------------------------------------------
 ### Install Zsh ecosystem
