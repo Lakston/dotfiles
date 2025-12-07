@@ -187,7 +187,7 @@ return {
 	["Quip"] = ":quip:",
 	["Raindrop.io"] = ":raindrop_io:",
 	["Raycast"] = ":raycast:",
-  ["Reactotron"] = ":reactotron:",
+  ["Reactotron"] = ":atom:",
 	["Reminders"] = ":reminders:",
 	["Replit"] = ":replit:",
 	["JetBrains Rider"] = ":rider:",

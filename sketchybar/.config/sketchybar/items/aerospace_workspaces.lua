@@ -7,7 +7,6 @@
 local colors = require("colors")
 local settings = require("settings")
 local app_icons = require("helpers.app_icons")
-local icon_converter = require("helpers.icon_converter")
 
 -- Register the custom event that AeroSpace will emit
 sbar.add("event", "aerospace_workspace_change")
@@ -69,20 +68,16 @@ local function create_workspace_item(ws)
 			},
 			string = ws, -- Display the workspace name/letter
 			padding_left = 8,
-			padding_right = 3,
+			padding_right = 5,
 			color = STYLE.inactive_workspace_number_color,
 			highlight_color = STYLE.active_workspace_number_color,
 		},
 		label = {
 			padding_right = 8,
-			padding_left = 4,  -- Space between workspace number and icons
+			padding_left = 5,  -- Space between workspace number and icons
 			color = STYLE.inactive_app_icons_color,
 			highlight_color = STYLE.active_app_icons_color,
-			font = {
-				family = "Hack Nerd Font",
-				style = "Regular",
-				size = 16.0
-			}, -- Use NerdFont for app icons
+			-- Font will be set dynamically based on which icons are used
 			y_offset = 0,
 		},
 		padding_right = 0,
@@ -187,15 +182,14 @@ local function update_workspace_appearance(ws, focused_workspace)
 			-- Only add unique apps to avoid duplicate icons
 			if app_name ~= "" and not seen_apps[app_name] then
 				seen_apps[app_name] = true
-				local placeholder = app_icons[app_name] or app_icons["Default"] or ":default:"
-				local icon = icon_converter.convert(placeholder)
+				local icon = app_icons[app_name] or app_icons["Default"] or ":default:"
 				table.insert(icon_parts, icon)
 			end
 		end
 
 		-- Build icon string with spacing between icons
 		-- Using a single space for spacing (can be adjusted)
-		local app_icons_string = table.concat(icon_parts, " ")
+		local app_icons_string = table.concat(icon_parts, "")
 		if app_icons_string == "" then
 			app_icons_string = " —"
 		end
@@ -207,6 +201,11 @@ local function update_workspace_appearance(ws, focused_workspace)
 				string = app_icons_string,
 				highlight = is_focused,
 				drawing = "on",
+				font = {
+					family = "sketchybar-app-font",
+					style = "Regular",
+					size = 16.0
+				},
 			},
 		})
 	end)

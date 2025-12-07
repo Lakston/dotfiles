@@ -109,6 +109,7 @@ brew tap homebrew/cask-fonts
 brew install --cask font-hack-nerd-font
 brew install --cask font-jetbrains-mono
 brew install --cask font-fira-code
+brew install --cask font-sketchybar-app-font # Required for sketchybar app icons
 
 ### --------------------------------------------------
 ### Fun / Extras
