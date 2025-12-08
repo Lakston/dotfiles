@@ -20,6 +20,7 @@ sbar.add("event", "aerospace_workspace_change")
 -- Each workspace will only appear on its designated monitor's bar
 local WORKSPACE_LAYOUT = {
 	{ display = 1, workspaces = { "1", "2", "3", "4", "5" } }, -- main monitor
+	{ display = 2, workspaces = { "1", "2", "3", "4", "5" } }, -- secondary monitor
 }
 
 -- Visual styling constants
@@ -37,16 +38,18 @@ local STYLE = {
 -- ============================================================================
 
 -- Storage for workspace items and their associated elements
-local workspace_items = {} -- workspace -> { item, display }
-local padding_items = {} -- workspace -> padding item name
+-- workspace -> { [display] = { item, display } }
+local workspace_items = {}
+local padding_items = {} -- workspace -> { [display] = padding item name }
 local separator_items = {} -- display -> separator item name
 
--- Build workspace -> display mapping for fast lookups
--- This allows us to quickly determine which monitor a workspace belongs to
-local workspace_to_display = {}
+-- Build workspace -> displays mapping for fast lookups
+-- This allows us to quickly determine which monitors a workspace belongs to
+local workspace_to_displays = {}
 for _, group in ipairs(WORKSPACE_LAYOUT) do
 	for _, ws in ipairs(group.workspaces) do
-		workspace_to_display[ws] = group.display
+		workspace_to_displays[ws] = workspace_to_displays[ws] or {}
+		table.insert(workspace_to_displays[ws], group.display)
 	end
 end
 
@@ -55,10 +58,8 @@ end
 -- ============================================================================
 
 -- Creates a workspace item (the clickable chip that shows the workspace)
-local function create_workspace_item(ws)
-	local display = workspace_to_display[ws] or "active"
-
-	local item = sbar.add("item", "aws." .. ws, {
+local function create_workspace_item(ws, display)
+	local item = sbar.add("item", string.format("aws.%s.d%s", ws, display), {
 		position = "left",
 		display = display, -- Pin this chip to its designated monitor
 		icon = {
@@ -103,7 +104,7 @@ end
 
 -- Creates a padding item for spacing between workspace groups
 local function create_padding_item(ws, display)
-	return sbar.add("item", "aws.pad." .. ws, {
+	return sbar.add("item", string.format("aws.pad.%s.d%s", ws, display), {
 		position = "left",
 		display = display,
 		width = settings.group_paddings,
@@ -111,21 +112,22 @@ local function create_padding_item(ws, display)
 	})
 end
 
--- Ensures a workspace item exists, creating it if necessary
-local function ensure_workspace_exists(ws)
-	if workspace_items[ws] then
-		return workspace_items[ws]
+-- Ensures workspace items exist on all configured displays
+local function ensure_workspace_exists(ws, display)
+	workspace_items[ws] = workspace_items[ws] or {}
+	padding_items[ws] = padding_items[ws] or {}
+
+	if workspace_items[ws][display] then
+		return workspace_items[ws][display]
 	end
 
-	local display = workspace_to_display[ws] or "active"
-	local item = create_workspace_item(ws)
+	local item = create_workspace_item(ws, display)
 	local pad = create_padding_item(ws, display)
 
-	-- Store references to all created items
-	workspace_items[ws] = { item = item, display = display }
-	padding_items[ws] = pad.name
+	workspace_items[ws][display] = { item = item, display = display }
+	padding_items[ws][display] = pad.name
 
-	return workspace_items[ws]
+	return workspace_items[ws][display]
 end
 
 -- Creates separator items between monitor groups
@@ -149,26 +151,30 @@ end
 -- ============================================================================
 
 
--- Shows or hides a workspace and its associated elements
+-- Shows or hides a workspace on all of its displays
 local function set_workspace_visibility(ws, visible)
-	local workspace = ensure_workspace_exists(ws)
-	local drawing_state = visible and "on" or "off"
+	local displays = workspace_to_displays[ws] or { "active" }
+	for _, display in ipairs(displays) do
+		local workspace = ensure_workspace_exists(ws, display)
+		local drawing_state = visible and "on" or "off"
 
-	-- Show/hide the main workspace item and padding
-	workspace.item:set({ drawing = drawing_state })
-	sbar.set(padding_items[ws], { drawing = drawing_state })
+		workspace.item:set({ drawing = drawing_state })
+		local pad_name = padding_items[ws][display]
+		if pad_name then
+			sbar.set(pad_name, { drawing = drawing_state })
+		end
+	end
 end
 
 
 -- Updates the visual appearance of a workspace based on its state and contents
 local function update_workspace_appearance(ws, focused_workspace)
-	local workspace = workspace_items[ws]
-	if not workspace then
+	local displays = workspace_to_displays[ws]
+	if not displays then
 		return
 	end
 
 	local is_focused = (ws == focused_workspace)
-	local display = workspace.display
 
 	-- Get list of applications running in this workspace
 	sbar.exec(string.format('aerospace list-windows --workspace %s --format "%%{app-name}"', ws), function(output)
@@ -188,26 +194,30 @@ local function update_workspace_appearance(ws, focused_workspace)
 		end
 
 		-- Build icon string with spacing between icons
-		-- Using a single space for spacing (can be adjusted)
 		local app_icons_string = table.concat(icon_parts, "")
 		if app_icons_string == "" then
 			app_icons_string = " —"
 		end
 
-		-- Update workspace visual state
-		workspace.item:set({
-			icon = { highlight = is_focused },
-			label = {
-				string = app_icons_string,
-				highlight = is_focused,
-				drawing = "on",
-				font = {
-					family = "sketchybar-app-font",
-					style = "Regular",
-					size = 16.0
-				},
-			},
-		})
+		-- Update workspace visual state on all displays
+		for _, display in ipairs(displays) do
+			local workspace = workspace_items[ws] and workspace_items[ws][display]
+			if workspace then
+				workspace.item:set({
+					icon = { highlight = is_focused },
+					label = {
+						string = app_icons_string,
+						highlight = is_focused,
+						drawing = "on",
+						font = {
+							family = "sketchybar-app-font",
+							style = "Regular",
+							size = 16.0
+						},
+					},
+				})
+			end
+		end
 	end)
 end
 
@@ -227,18 +237,28 @@ local function update_separators()
 
 		-- Check if left group has any visible workspaces
 		for _, ws in ipairs(left_workspaces) do
-			if workspace_items[ws] and workspace_items[ws].item:query().geometry.drawing == "on" then
-				left_has_visible = true
-				break
+			if workspace_items[ws] then
+				for _, entry in pairs(workspace_items[ws]) do
+					if entry.item:query().geometry.drawing == "on" then
+						left_has_visible = true
+						break
+					end
+				end
 			end
+			if left_has_visible then break end
 		end
 
 		-- Check if right group has any visible workspaces
 		for _, ws in ipairs(right_workspaces) do
-			if workspace_items[ws] and workspace_items[ws].item:query().geometry.drawing == "on" then
-				right_has_visible = true
-				break
+			if workspace_items[ws] then
+				for _, entry in pairs(workspace_items[ws]) do
+					if entry.item:query().geometry.drawing == "on" then
+						right_has_visible = true
+						break
+					end
+				end
 			end
+			if right_has_visible then break end
 		end
 
 		-- Show separator only if both adjacent groups have visible workspaces
@@ -283,7 +303,7 @@ local function update_all_workspaces()
 			else
 				-- Process each workspace in the group
 				for _, ws in ipairs(workspaces_list) do
-					ensure_workspace_exists(ws)
+					ensure_workspace_exists(ws, group.display)
 
 					-- Check if workspace has any windows
 					sbar.exec("aerospace list-windows --workspace " .. ws, function(windows_output)
@@ -320,7 +340,7 @@ end
 -- Create all workspace items upfront
 for _, group in ipairs(WORKSPACE_LAYOUT) do
 	for _, ws in ipairs(group.workspaces) do
-		ensure_workspace_exists(ws)
+		ensure_workspace_exists(ws, group.display)
 	end
 end
 
