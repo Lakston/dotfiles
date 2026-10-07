@@ -84,6 +84,7 @@ alias podd="cd ios && rm Podfile.lock && pod deintegrate && cd .."
 alias podru="cd ios && pod install --repo-update && cd .."
 alias adbr="adb reverse tcp:8081 tcp:8081"
 alias adbd="adb devices"
+alias rmdotenv="rm node_modules/react-native-config/ios/ReactNativeConfig/GeneratedDotEnv.m"
 
 #|--------------------------------------------------
 #| REACT NATIVE TOOLS
@@ -103,3 +104,13 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Created by `pipx` on 2025-12-18 15:13:34
+export PATH="$PATH:/Users/laks/.local/bin"
+export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/laks/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/laks/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/laks/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/laks/Downloads/google-cloud-sdk/completion.zsh.inc'; fi

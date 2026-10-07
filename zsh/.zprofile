@@ -39,3 +39,8 @@ export PATH=$PATH:$HOME/.maestro/bin
 export EZA_CONFIG_DIR="$HOME/.config/eza"
 export TEALDEER_CONFIG_DIR="$HOME/.config/tealdeer"
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+# Created by `pipx` on 2025-12-18 15:13:34
+export PATH="$PATH:/Users/laks/.local/bin"
+
+# docker
+export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
